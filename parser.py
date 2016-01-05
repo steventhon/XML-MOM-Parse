@@ -9,7 +9,7 @@ import glob
 # List of specific product SKUs to set to hold
 skusToHold = ["19PS01", "04HS90"]
 # List of substrings of specific product SKUs to set to hold
-subskusToHold = ["01HS", "01PP", "01RI", "06HS", "02SS", "02DD", "19HSIFC", "02CW", "12BW", "fg", "04RIG1", "04SFpdKit", "06HS"]
+subskusToHold = ["01HS", "01PP", "01RI", "06HS", "02SS", "02DD", "19HSIFC", "02CW", "12BW", "fg", "04RIG1", "04SFpdKit"]
 # List of shipping methods to hold if shipped to POBOX
 shippingsToHold = ["1GD", "FES", "FE2"]
 
