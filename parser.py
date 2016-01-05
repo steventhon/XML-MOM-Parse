@@ -12,7 +12,7 @@ skusToHold = ["19PS01", "04HS90"]
 subskusToHold = ["01HS", "01PP", "01RI", "06HS", "02SS", "02DD", "19HSIFC", "02CW", "12BW", "fg", "04RIG1", "04SF", "04AM"]
 # List of shipping methods to hold if shipped to POBOX
 poboxShippingsToHold = ["1GD", "FES", "FE2"]
-# List of shipping methods to hold to cover drop-shipped items
+# List of shipping methods to hold to cover drop-shipped products
 shippingsToHold = ["FES". "FE2"]
 
 # checkHold returns True if any hold condition is met
@@ -64,9 +64,9 @@ def checkHold(root):
   if 'POBOX' in root.find('saddress1').text  and shipvia in poboxShippingsToHold:
     print 'Saddress1 and Shipvia: POBOX and ' + shipvia
     hold = True
-  # Return True if order is being shipped via FedEx Standard Overnight or FedEx 2 Day Air for possible drop-shipped items
+  # Return True if order is being shipped via FedEx Standard Overnight or FedEx 2 Day Air for possible drop-shipped products
   if shipvia in shippingsToHold
-    print 'Shipvia: Possible drop-shipped item (shipped via ' + shipvia + ')'
+    print 'Shipvia: Possible drop-shipped products (shipped via ' + shipvia + ')'
     hold = True
     
   # Returns False if no condition is met
