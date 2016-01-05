@@ -9,7 +9,7 @@ import glob
 # List of specific product SKUs to set to hold
 skusToHold = ["19PS01", "04HS90"]
 # List of substrings of specific product SKUs to set to hold
-subskusToHold = ["01HS", "01PP", "01RI", "06HS", "02SS", "02DD", "19HSIFC", "02CW", "12BW", "fg", "04RIG1", "04SFpdKit"]
+subskusToHold = ["01HS", "01PP", "01RI", "06HS", "02SS", "02DD", "19HSIFC", "02CW", "12BW", "fg", "04RIG1", "04SFpdKit", "04AM"]
 # List of shipping methods to hold if shipped to POBOX
 shippingsToHold = ["1GD", "FES", "FE2"]
 
@@ -54,9 +54,9 @@ def checkHold(root):
   if shipvia == 'WC':
     print 'Shipvia: Will Call/Pick Up order'
     hold = True
-  # Return True if order is being shipped internationally via Priority Mail
-  if root.find('scountry').text != 'US' and shipvia == 'PM':
-    print 'Scountry and Shipvia: International and Priority Mail'
+  # Return True if order is being shipped internationally
+  if root.find('scountry').text != 'US':
+    print 'Scountry: International'
     hold = True
   # Return True if order is being shipped to POBOX via FedEx (1 Day Ground, Standard Overnight, 2 Day Air)
   if 'POBOX' in root.find('saddress1').text  and shipvia in shippingsToHold:
