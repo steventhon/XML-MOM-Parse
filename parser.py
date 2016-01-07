@@ -30,7 +30,12 @@ def checkHold(root):
         products.append(root.find('product04').text)
         if root.find('product05').text is not None:
           products.append(root.find('product05').text)
-  #print products
+  
+  # Return True if two or more products are ordered
+  if root.find('product02').text is not None:
+    print 'Found two or more products being ordered'
+    hold = True
+
 
   list = [sku for sku in skusToHold if sku in products]
   # Return True if any of the products' skus is in skus list
