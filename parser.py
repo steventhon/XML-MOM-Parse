@@ -88,7 +88,7 @@ def add_years(d, years):
 
 # Set the hold date to current date plus 'holdYears' years
 def setHolddate(root, holdYears):
-  holddate = add_years(datetime.now().date(), 3)
+  holddate = add_years(datetime.now().date(), holdYears)
   root.find('holddate').text = str(holddate)
 
 # Main function to run script
