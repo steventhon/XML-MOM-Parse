@@ -94,7 +94,8 @@ def setHolddate(root, holdYears):
 # Main function to run script
 def main():
   # Path of the working directory to change to for parsing
-  path = 'C:\Users\sthon\Desktop\dataxml'
+  #path = 'C:\Users\sthon\Desktop\dataxml'
+  path = 'C:\Xtento\Download\data'
   # Change the currect working directory to the one to parse through
   os.chdir(path)
   #print 'Current working directory changed to: ' + os.getcwd()
