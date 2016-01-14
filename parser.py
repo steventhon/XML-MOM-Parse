@@ -14,6 +14,16 @@ subskusToHold = ["01HS", "01PP", "02CW", "02DD", "02SS", "04AM", "04RIG1", "04SF
 poboxShippingsToHold = ["1GD", "FES", "FE2"]
 # List of shipping methods to hold to cover drop-shipped products
 shippingsToHold = ["FES", "FE2"]
+# List of subskus that do not need to go on hold
+subskusExceptions = ["11HSLD", "03HS", "04HS"]
+
+# Remove product exceptions from product list so we don't check over them
+def removeExceptions(products):
+  for sku in products:
+    for subsku in subskusExceptions:
+      if subsku in sku:
+        products.remove(sku)
+  return products
 
 # checkHold returns True if any hold condition is met
 def checkHold(root):
