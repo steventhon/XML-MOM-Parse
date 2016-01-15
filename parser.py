@@ -5,6 +5,7 @@ except ImportError:
 from datetime import datetime
 import os
 import glob
+import fileinput
 
 # List of specific product SKUs to set to hold
 skusToHold = ["04HS90", "19PS01"]
@@ -16,6 +17,25 @@ poboxShippingsToHold = ["1GD", "FES", "FE2"]
 shippingsToHold = ["FES", "FE2"]
 # List of subskus that do not need to go on hold
 subskusExceptions = ["11HSLD", "03HS", "04HS"]
+
+# Check ships
+def checkShipping(root):
+  shipvia = root.find('shipvia').text
+  # Add custom comment if order is being shipped via FedEx Standard Overnight or FedEx 2 Day Air for possible drop-shipped products
+  if shipvia in shippingsToHold:
+    # Shipped via FedEx Standard Overnight
+    if shipvia == 'FES':
+      if (root.find('custom01').text is not None):
+        root.find('custom01').text += "&#xD;****Please ship STANDARD OVERNIGHT****"
+      else:
+        root.find('custom01').text = "&#xD;****Please ship STANDARD OVERNIGHT****"
+    # shipped via FedEx 2 Day Air
+    if shipvia == 'FE2':
+      if (root.find('custom01').text is not None):
+        root.find('custom01').text += "&#xD;****Please ship 2-DAY AIR****"
+      else:
+        root.find('custom01').text = "&#xD;****Please ship 2-DAY AIR****"
+    print 'Added custom information for shipping method: ' + shipvia
 
 # Remove product exceptions from product list so we don't check over them
 def removeExceptions(products):
@@ -76,10 +96,6 @@ def checkHold(root):
   if 'POBOX' in root.find('saddress1').text  and shipvia in poboxShippingsToHold:
     print 'Saddress1 and Shipvia: POBOX and ' + shipvia
     hold = True
-  # Return True if order is being shipped via FedEx Standard Overnight or FedEx 2 Day Air for possible drop-shipped products
-  if shipvia in shippingsToHold:
-    print 'Shipvia: Possible drop-shipped products (shipped via ' + shipvia + ')'
-    hold = True
     
   # Returns False if no condition is met
   return hold
@@ -117,6 +133,8 @@ def main():
     root = ET.parse(file).getroot()
     # Start at the more relevant root: import_ca
     subroot = root[0]
+    # Check the shipping methods and add custom info if needed
+    checkShipping(root)
     # Check and add holddate if conditions are met
     if (checkHold(subroot)):
       # Set hold date by X number of years from now
@@ -130,7 +148,7 @@ def main():
   
   #root = ET.fromstring(file)
 
-  #if (checkHold(order)):
+  #if (checkHold(root[0])):
   #setHolddate(root[0], 3)
   #print "holddate:" + root[0].find('holddate').text
     
