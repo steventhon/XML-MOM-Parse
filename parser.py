@@ -26,9 +26,9 @@ def checkShipping(root):
     # Shipped via FedEx Standard Overnight
     if shipvia == 'FES':
       if (root.find('custom01').text is not None):
-        root.find('custom01').text += "&#xD;****Please ship STANDARD OVERNIGHT****"
+        root.find('custom01').text += "\n\n****Please ship STANDARD OVERNIGHT****"
       else:
-        root.find('custom01').text = "****Please ship STANDARD OVERNIGHT****"
+        root.find('custom01').text = "\n\n****Please ship STANDARD OVERNIGHT****"
     # shipped via FedEx 2 Day Air
     if shipvia == 'FE2':
       if (root.find('custom01').text is not None):
