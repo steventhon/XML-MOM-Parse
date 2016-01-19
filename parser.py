@@ -49,6 +49,11 @@ def removeExceptions(products):
 def checkHold(root):
   hold = False
 
+  # Return True if Dick Dixon orders
+  if root.find('lastname').text == 'Dixon' and root.find('firstname').text == 'Dick':
+    print 'Order placed by ' + root.find('firstname').text + ' ' + root.find('lastname').text + '. Add Signature Required'
+    hold = True
+
   # Add products to a list for easy checking
   products = []
   products.append(root.find('product01').text)
