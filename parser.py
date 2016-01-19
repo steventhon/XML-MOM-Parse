@@ -14,7 +14,7 @@ subskusToHold = ["01HS", "01PP", "02CW", "02DD", "02SS", "04AM", "04RIG1", "04SF
 # List of shipping methods to hold if shipped to POBOX
 poboxShippingsToHold = ["1GD", "FES", "FE2"]
 # List of shipping methods to hold to cover drop-shipped products
-shippingsToHold = ["FES", "FE2"]
+shippingsToHold = ["United Parcel Service - UPS Ground"]
 # List of subskus that do not need to go on hold
 subskusExceptions = ["11HSLD", "03HS", "04HS"]
 
@@ -91,6 +91,11 @@ def checkHold(root):
   # Return True if order is being shipped internationally
   if root.find('scountry').text != 'US':
     print 'Scountry: International'
+    hold = True
+  # Return True if order is being shipped via UPS
+  if shipvia == 'United Parcel Service - UPS Ground' || shipvia == 'UG':
+    print 'Shipvia: ' + shipvia
+    root.find('shipvia').text = 'UG'
     hold = True
   # Return True if order is being shipped to POBOX via FedEx (1 Day Ground, Standard Overnight, 2 Day Air)
   if 'POBOX' in root.find('saddress1').text  and shipvia in poboxShippingsToHold:
