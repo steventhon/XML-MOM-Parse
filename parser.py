@@ -134,7 +134,7 @@ def main():
     # Start at the more relevant root: import_ca
     subroot = root[0]
     # Check the shipping methods and add custom info if needed
-    checkShipping(root)
+    checkShipping(subroot)
     # Check and add holddate if conditions are met
     if (checkHold(subroot)):
       # Set hold date by X number of years from now
