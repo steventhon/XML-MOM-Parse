@@ -93,7 +93,7 @@ def checkHold(root):
     print 'Scountry: International'
     hold = True
   # Return True if order is being shipped via UPS
-  if shipvia == 'United Parcel Service - UPS Ground' || shipvia == 'UG':
+  if shipvia == 'United Parcel Service - UPS Ground' or shipvia == 'UG':
     print 'Shipvia: ' + shipvia
     root.find('shipvia').text = 'UG'
     hold = True
