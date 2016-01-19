@@ -28,11 +28,11 @@ def checkShipping(root):
       if (root.find('custom01').text is not None):
         root.find('custom01').text += "\n\n****Please ship STANDARD OVERNIGHT****"
       else:
-        root.find('custom01').text = "\n\n****Please ship STANDARD OVERNIGHT****"
+        root.find('custom01').text = "****Please ship STANDARD OVERNIGHT****"
     # shipped via FedEx 2 Day Air
     if shipvia == 'FE2':
       if (root.find('custom01').text is not None):
-        root.find('custom01').text += "&#xD;****Please ship 2-DAY AIR****"
+        root.find('custom01').text += "\n\n****Please ship 2-DAY AIR****"
       else:
         root.find('custom01').text = "****Please ship 2-DAY AIR****"
     print 'Added custom information for shipping method: ' + shipvia
