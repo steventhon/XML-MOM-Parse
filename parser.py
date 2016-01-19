@@ -13,16 +13,16 @@ skusToHold = ["04HS90", "19PS01"]
 subskusToHold = ["01HS", "01PP", "02CW", "02DD", "02SS", "04AM", "04RIG1", "04SF", "05HS", "06HS", "12BW", "19HSIFC", "fg", "_rescue"]
 # List of shipping methods to hold if shipped to POBOX
 poboxShippingsToHold = ["1GD", "FES", "FE2"]
-# List of shipping methods to hold to cover drop-shipped products
-shippingsToHold = ["United Parcel Service - UPS Ground"]
+# List of shipping methods to check to cover drop-shipped products
+shippingsToCheck = ["United Parcel Service - UPS Ground"]
 # List of subskus that do not need to go on hold
 subskusExceptions = ["11HSLD", "03HS", "04HS"]
 
-# Check ships
+# Check shipping methods and adds custom information to specific ones
 def checkShipping(root):
   shipvia = root.find('shipvia').text
   # Add custom comment if order is being shipped via FedEx Standard Overnight or FedEx 2 Day Air for possible drop-shipped products
-  if shipvia in shippingsToHold:
+  if shipvia in shippingsToCheck:
     # Shipped via FedEx Standard Overnight
     if shipvia == 'FES':
       if (root.find('custom01').text is not None):
