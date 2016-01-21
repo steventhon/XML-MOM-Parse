@@ -59,7 +59,7 @@ def checkHold(f, root):
   products.append(root.find('product01').text)
   # Return True if two or more products are ordered
   if root.find('product02').text is not None:
-    f.write('Found two or more products being ordered')
+    f.write('Found two or more products being ordered\n')
     hold = True
     products.append(root.find('product02').text)
     if root.find('product03').text is not None:
@@ -80,7 +80,7 @@ def checkHold(f, root):
   # Return True if any of the products' substrings is in subskus list
   if list:
     #print 'Found an element of subsku list as a substring of an element in products list'
-    f.write('Found Product Partial SKUs: ' + ', '.join(list) + '\n')
+    f.write('Found Product Partial SKUs: ' + ', '.joiwn(list) + '\n')
     hold = True
 
   shipvia = root.find('shipvia').text
@@ -138,22 +138,25 @@ def main():
   #print 'Current working directory changed to: ' + os.getcwd()
   
   files = glob.glob('*.xml')
-  # For each XML file, parse each
-  for file in files:
-    print 'Looking in .xml file: ' + file
-    root = ET.parse(file).getroot()
-    # Start at the more relevant root: import_ca
-    subroot = root[0]
+  if files:
     # open file to write order log in
-    f = open('C:\Users\Administrator\Desktop\logsXtento\orderlog' + file[:-4] + '.txt', 'w')
-    # Check the shipping methods and add custom info if needed
-    checkShipping(f, subroot)
-    # Check and add holddate if conditions are met
-    if (checkHold(f, subroot)):
-      # Set hold date by X number of years from now
-      setHolddate(f, subroot, 3)
-      # Write tree back to XML file
-      #ET.ElementTree(root).write(file)
+    f = open('C:\Users\Administrator\Desktop\logsXtento\orders_' + datetime.now() + '.txt', 'w')
+    # For each XML file, parse each
+    for file in files:
+      print 'Looking in .xml file: ' + file
+      f.write('Alternate Order #' + file[11:-4] + '\n')
+      root = ET.parse(file).getroot()
+      # Start at the more relevant root: import_ca
+      subroot = root[0]
+      # Check the shipping methods and add custom info if needed
+      checkShipping(f, subroot)
+      # Check and add holddate if conditions are met
+      if (checkHold(f, subroot)):
+        # Set hold date by X number of years from now
+        setHolddate(f, subroot, 3)
+        # Write tree back to XML file
+        #ET.ElementTree(root).write(file)
+      f.write('\n')
 
   #file = ''
   #for line in fileinput.input():
