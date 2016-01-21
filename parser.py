@@ -35,7 +35,7 @@ def checkShipping(f, root):
         root.find('custom01').text += "\n\n****Please ship 2-DAY AIR****"
       else:
         root.find('custom01').text = "****Please ship 2-DAY AIR****"
-    f.write('Added custom information for shipping method: ' + shipvia)
+    f.write('Added custom information for shipping method: ' + shipvia + '\n')
 
 # Remove product exceptions from product list so we don't check over them
 def removeExceptions(products):
@@ -51,7 +51,7 @@ def checkHold(f, root):
 
   # Return True if Dick Dixon orders
   if root.find('lastname').text == 'Dixon' and root.find('firstname').text == 'Dick':
-    f.write('Order placed by ' + root.find('firstname').text + ' ' + root.find('lastname').text + '. Add Signature Required')
+    f.write('Order placed by ' + root.find('firstname').text + ' ' + root.find('lastname').text + '. Add Signature Required\n')
     hold = True
 
   # Add products to a list for easy checking
@@ -73,38 +73,38 @@ def checkHold(f, root):
   # Return True if any of the products' skus is in skus list
   if list:
     #print 'Found an element of sku list in products list'
-    f.write('Found Product SKUs: ' + ''.join(list))
+    f.write('Found Product SKUs: ' + ''.join(list) + '\n')
     hold = True
 
   list = [sku for subsku in subskusToHold for sku in products if subsku in sku]
   # Return True if any of the products' substrings is in subskus list
   if list:
     #print 'Found an element of subsku list as a substring of an element in products list'
-    f.write('Found Product Partial SKUs: ' + ''.join(list))
+    f.write('Found Product Partial SKUs: ' + ''.join(list) + '\n')
     hold = True
 
   shipvia = root.find('shipvia').text
   
   # Return True if no shipping method
   if shipvia is None:
-    f.write('Shipvia: No Shipping Method')
+    f.write('Shipvia: No Shipping Method\n')
     hold = True
   # Return True if order will be picked up/will call in
   if shipvia == 'WC':
-    f.write('Shipvia: Will Call/Pick Up order')
+    f.write('Shipvia: Will Call/Pick Up order\n')
     hold = True
   # Return True if order is being shipped internationally
   if root.find('scountry').text != 'US':
-    f.write('Scountry: International')
+    f.write('Scountry: International\n')
     hold = True
   # Return True if order is being shipped via UPS
   if shipvia == 'United Parcel Service - UPS Ground' or shipvia == 'UG':
-    f.write('Shipvia: ' + shipvia)
+    f.write('Shipvia: ' + shipvia + '\n')
     root.find('shipvia').text = 'UG'
     hold = True
   # Return True if order is being shipped to POBOX via FedEx (1 Day Ground, Standard Overnight, 2 Day Air)
   if 'POBOX' in root.find('saddress1').text  and shipvia in poboxShippingsToHold:
-    f.write('Saddress1 and Shipvia: POBOX and ' + shipvia)
+    f.write('Saddress1 and Shipvia: POBOX and ' + shipvia + '\n')
     hold = True
     
   # Returns False if no condition is met
@@ -126,7 +126,7 @@ def add_years(d, years):
 def setHolddate(f, root, holdYears):
   holddate = add_years(datetime.now().date(), holdYears)
   root.find('holddate').text = str(holddate)
-  f.write('Holdate set to: ' + str(holddate))
+  f.write('Holdate set to: ' + str(holddate) + '\n')
 
 # Main function to run script
 def main():
@@ -145,7 +145,7 @@ def main():
     # Start at the more relevant root: import_ca
     subroot = root[0]
     # open file to write order log in
-    f = open('C:\Users\Administrator\Desktop\logsXtento\orderlog' + file + '.txt', 'w')
+    f = open('C:\Users\Administrator\Desktop\logsXtento\orderlog' + file[:-4] + '.txt', 'w')
     # Check the shipping methods and add custom info if needed
     checkShipping(f, subroot)
     # Check and add holddate if conditions are met
