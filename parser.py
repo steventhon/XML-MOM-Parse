@@ -126,7 +126,7 @@ def add_years(d, years):
 def setHolddate(f, root, holdYears):
   holddate = add_years(datetime.now().date(), holdYears)
   root.find('holddate').text = str(holddate)
-  f.write('Holdate set to: ' + holddate)
+  f.write('Holdate set to: ' + str(holddate))
 
 # Main function to run script
 def main():
