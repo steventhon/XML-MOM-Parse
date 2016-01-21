@@ -145,7 +145,7 @@ def main():
     # Start at the more relevant root: import_ca
     subroot = root[0]
     # open file to write order log in
-    f = open('C:\Users\Administrator\Desktop\logsXtento' + file, 'w')
+    f = open('C:\Users\Administrator\Desktop\logsXtento\' + file + '.txt', 'w')
     # Check the shipping methods and add custom info if needed
     checkShipping(f, subroot)
     # Check and add holddate if conditions are met
