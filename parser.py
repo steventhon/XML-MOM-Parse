@@ -80,7 +80,7 @@ def checkHold(f, root):
   # Return True if any of the products' substrings is in subskus list
   if list:
     #print 'Found an element of subsku list as a substring of an element in products list'
-    f.write('Found Product Partial SKUs: ' + ', '.joiwn(list) + '\n')
+    f.write('Found Product Partial SKUs: ' + ', '.join(list) + '\n')
     hold = True
 
   shipvia = root.find('shipvia').text
@@ -126,7 +126,7 @@ def add_years(d, years):
 def setHolddate(f, root, holdYears):
   holddate = add_years(datetime.now().date(), holdYears)
   root.find('holddate').text = str(holddate)
-  f.write('Holdate set to: ' + str(holddate) + '\n')
+  f.write('Hold date set to: ' + str(holddate) + '\n')
 
 # Main function to run script
 def main():
@@ -140,7 +140,7 @@ def main():
   files = glob.glob('*.xml')
   if files:
     # open file to write order log in
-    f = open('C:\Users\Administrator\Desktop\logsXtento\orders_' + datetime.now() + '.txt', 'w')
+    f = open('C:\Users\Administrator\Desktop\logsXtento\orders_' + datetime.now().strftime("%y-%m-%d_%H_%M") + '.txt', 'w')
     # For each XML file, parse each
     for file in files:
       print 'Looking in .xml file: ' + file
