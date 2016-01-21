@@ -73,14 +73,14 @@ def checkHold(f, root):
   # Return True if any of the products' skus is in skus list
   if list:
     #print 'Found an element of sku list in products list'
-    f.write('Found Product SKUs: ' + ''.join(list) + '\n')
+    f.write('Found Product SKUs: ' + ', '.join(list) + '\n')
     hold = True
 
   list = [sku for subsku in subskusToHold for sku in products if subsku in sku]
   # Return True if any of the products' substrings is in subskus list
   if list:
     #print 'Found an element of subsku list as a substring of an element in products list'
-    f.write('Found Product Partial SKUs: ' + ''.join(list) + '\n')
+    f.write('Found Product Partial SKUs: ' + ', '.join(list) + '\n')
     hold = True
 
   shipvia = root.find('shipvia').text
