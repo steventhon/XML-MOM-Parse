@@ -14,15 +14,13 @@ subskusToHold = ["01HS", "01PP", "02CW", "02DD", "02SS", "04AM", "04RIG1", "04SF
 # List of shipping methods to hold if shipped to POBOX
 poboxShippingsToHold = ["1GD", "FES", "FE2"]
 # List of shipping methods to check to cover drop-shipped products
-shippingsToCheck = ["United Parcel Service - UPS Ground"]
+shippingsToCheck = ["FES", "FE2"]
 # List of subskus that do not need to go on hold
 subskusExceptions = ["11HSLD", "03HS", "04HS"]
-# Order log
-log = ''
-
 
 # Check shipping methods and adds custom information to specific ones
 def checkShipping(root):
+  log = ''
   shipvia = root.find('shipvia').text
   # Add custom comment if order is being shipped via FedEx Standard Overnight or FedEx 2 Day Air for possible drop-shipped products
   if shipvia in shippingsToCheck:
@@ -39,6 +37,7 @@ def checkShipping(root):
       else:
         root.find('custom01').text = "****Please ship 2-DAY AIR****"
     log += 'Added custom information for shipping method: ' + shipvia + '\n'
+  return log
 
 # Remove product exceptions from product list so we don't check over them
 def removeExceptions(products):
@@ -51,7 +50,8 @@ def removeExceptions(products):
 # checkHold returns True if any hold condition is met
 def checkHold(root):
   hold = False
-
+  log = ''
+  
   # Return True if Dick Dixon orders
   if root.find('lastname').text == 'Dixon' and root.find('firstname').text == 'Dick':
     log += 'Order placed by ' + root.find('firstname').text + ' ' + root.find('lastname').text + '. Add Signature Required\n'
@@ -111,7 +111,7 @@ def checkHold(root):
     hold = True
     
   # Returns False if no condition is met
-  return hold
+  return (log, hold)
 
 # Add years to date d
 def add_years(d, years):
@@ -129,7 +129,7 @@ def add_years(d, years):
 def setHolddate(root, holdYears):
   holddate = add_years(datetime.now().date(), holdYears)
   root.find('holddate').text = str(holddate)
-  log += 'Hold date set to: ' + str(holddate) + '\n'
+  return 'Hold date set to: ' + str(holddate) + '\n'
 
 # Main function to run script
 def main():
@@ -142,24 +142,29 @@ def main():
   
   files = glob.glob('*.xml')
   if files:
-    # open file to write order log in
-    f = open('C:\Users\Administrator\Desktop\logsXtento\orders_' + datetime.now().strftime("%y-%m-%d_%H_%M") + '.txt', 'w')
+    orderlog = ''
     # For each XML file, parse each
     for file in files:
+		log = ''
 		print 'Looking in .xml file: ' + file
-		log = 'Alternate Order #' + file[11:-4] + '\n'
 		root = ET.parse(file).getroot()
 		# Start at the more relevant root: import_ca
 		subroot = root[0]
 		# Check the shipping methods and add custom info if needed
 		checkShipping(subroot)
 		# Check and add holddate if conditions are met
-		if (checkHold(subroot)):
+		olog, onHold = checkHold(subroot)
+		log += olog
+		if (onHold):
 			# Set hold date by X number of years from now
-			setHolddate(subroot, 3)
+			log += setHolddate(subroot, 4)
 			# Write tree back to XML file
-			#ET.ElementTree(root).write(file)
-		f.write(log + '\n')
+			ET.ElementTree(root).write(file)
+			orderlog += 'Alternate Order #' + file[11:-4] + '\n' + log + '\n'
+    if orderlog != '':
+	    # open file to write order log in
+        f = open('C:\Users\Administrator\Desktop\logsXtento\orders_' + datetime.now().strftime("%y-%m-%d_%H_%M") + '.txt', 'w')
+        f.write(orderlog)
 
   #file = ''
   #for line in fileinput.input():
