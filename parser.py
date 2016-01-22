@@ -17,9 +17,12 @@ poboxShippingsToHold = ["1GD", "FES", "FE2"]
 shippingsToCheck = ["United Parcel Service - UPS Ground"]
 # List of subskus that do not need to go on hold
 subskusExceptions = ["11HSLD", "03HS", "04HS"]
+# Order log
+log = ''
+
 
 # Check shipping methods and adds custom information to specific ones
-def checkShipping(f, root):
+def checkShipping(root):
   shipvia = root.find('shipvia').text
   # Add custom comment if order is being shipped via FedEx Standard Overnight or FedEx 2 Day Air for possible drop-shipped products
   if shipvia in shippingsToCheck:
@@ -35,7 +38,7 @@ def checkShipping(f, root):
         root.find('custom01').text += "\n\n****Please ship 2-DAY AIR****"
       else:
         root.find('custom01').text = "****Please ship 2-DAY AIR****"
-    f.write('Added custom information for shipping method: ' + shipvia + '\n')
+    log += 'Added custom information for shipping method: ' + shipvia + '\n'
 
 # Remove product exceptions from product list so we don't check over them
 def removeExceptions(products):
@@ -46,12 +49,12 @@ def removeExceptions(products):
   return products
 
 # checkHold returns True if any hold condition is met
-def checkHold(f, root):
+def checkHold(root):
   hold = False
 
   # Return True if Dick Dixon orders
   if root.find('lastname').text == 'Dixon' and root.find('firstname').text == 'Dick':
-    f.write('Order placed by ' + root.find('firstname').text + ' ' + root.find('lastname').text + '. Add Signature Required\n')
+    log += 'Order placed by ' + root.find('firstname').text + ' ' + root.find('lastname').text + '. Add Signature Required\n'
     hold = True
 
   # Add products to a list for easy checking
@@ -59,7 +62,7 @@ def checkHold(f, root):
   products.append(root.find('product01').text)
   # Return True if two or more products are ordered
   if root.find('product02').text is not None:
-    f.write('Found two or more products being ordered\n')
+    log += 'Found two or more products being ordered\n'
     hold = True
     products.append(root.find('product02').text)
     if root.find('product03').text is not None:
@@ -73,38 +76,38 @@ def checkHold(f, root):
   # Return True if any of the products' skus is in skus list
   if list:
     #print 'Found an element of sku list in products list'
-    f.write('Found Product SKUs: ' + ', '.join(list) + '\n')
+    log += 'Found Product SKUs: ' + ', '.join(list) + '\n'
     hold = True
 
   list = [sku for subsku in subskusToHold for sku in products if subsku in sku]
   # Return True if any of the products' substrings is in subskus list
   if list:
     #print 'Found an element of subsku list as a substring of an element in products list'
-    f.write('Found Product Partial SKUs: ' + ', '.join(list) + '\n')
+    log += 'Found Product Partial SKUs: ' + ', '.join(list) + '\n'
     hold = True
 
   shipvia = root.find('shipvia').text
   
   # Return True if no shipping method
   if shipvia is None:
-    f.write('Shipvia: No Shipping Method\n')
+    log += 'Shipvia: No Shipping Method\n'
     hold = True
   # Return True if order will be picked up/will call in
   if shipvia == 'WC':
-    f.write('Shipvia: Will Call/Pick Up order\n')
+    log += 'Shipvia: Will Call/Pick Up order\n'
     hold = True
   # Return True if order is being shipped internationally
   if root.find('scountry').text != 'US':
-    f.write('Scountry: International\n')
+    log += 'Scountry: International\n'
     hold = True
   # Return True if order is being shipped via UPS
   if shipvia == 'United Parcel Service - UPS Ground' or shipvia == 'UG':
-    f.write('Shipvia: ' + shipvia + '\n')
+    log += 'Shipvia: ' + shipvia + '\n'
     root.find('shipvia').text = 'UG'
     hold = True
   # Return True if order is being shipped to POBOX via FedEx (1 Day Ground, Standard Overnight, 2 Day Air)
   if 'POBOX' in root.find('saddress1').text  and shipvia in poboxShippingsToHold:
-    f.write('Saddress1 and Shipvia: POBOX and ' + shipvia + '\n')
+    log += 'Saddress1 and Shipvia: POBOX and ' + shipvia + '\n'
     hold = True
     
   # Returns False if no condition is met
@@ -123,10 +126,10 @@ def add_years(d, years):
         return d + (date(d.year + years, 1, 1) - date(d.year, 1, 1))
 
 # Set the hold date to current date plus 'holdYears' years
-def setHolddate(f, root, holdYears):
+def setHolddate(root, holdYears):
   holddate = add_years(datetime.now().date(), holdYears)
   root.find('holddate').text = str(holddate)
-  f.write('Hold date set to: ' + str(holddate) + '\n')
+  log += 'Hold date set to: ' + str(holddate) + '\n'
 
 # Main function to run script
 def main():
@@ -143,20 +146,20 @@ def main():
     f = open('C:\Users\Administrator\Desktop\logsXtento\orders_' + datetime.now().strftime("%y-%m-%d_%H_%M") + '.txt', 'w')
     # For each XML file, parse each
     for file in files:
-      print 'Looking in .xml file: ' + file
-      f.write('Alternate Order #' + file[11:-4] + '\n')
-      root = ET.parse(file).getroot()
-      # Start at the more relevant root: import_ca
-      subroot = root[0]
-      # Check the shipping methods and add custom info if needed
-      checkShipping(f, subroot)
-      # Check and add holddate if conditions are met
-      if (checkHold(f, subroot)):
-        # Set hold date by X number of years from now
-        setHolddate(f, subroot, 3)
-        # Write tree back to XML file
-        #ET.ElementTree(root).write(file)
-      f.write('\n')
+		print 'Looking in .xml file: ' + file
+		log = 'Alternate Order #' + file[11:-4] + '\n'
+		root = ET.parse(file).getroot()
+		# Start at the more relevant root: import_ca
+		subroot = root[0]
+		# Check the shipping methods and add custom info if needed
+		checkShipping(subroot)
+		# Check and add holddate if conditions are met
+		if (checkHold(subroot)):
+			# Set hold date by X number of years from now
+			setHolddate(subroot, 3)
+			# Write tree back to XML file
+			#ET.ElementTree(root).write(file)
+		f.write(log + '\n')
 
   #file = ''
   #for line in fileinput.input():
