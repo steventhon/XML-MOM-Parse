@@ -102,7 +102,7 @@ def checkHold(root):
     hold = True
   # Return True if order is being shipped via UPS
   if shipvia == 'United Parcel Service - UPS Ground' or shipvia == 'UG':
-    log += 'Shipvia: ' + shipvia + '\n'
+    log += 'Shipvia: Changed ' + shipvia + ' to UG\n'
     root.find('shipvia').text = 'UG'
     hold = True
   # Return True if order is being shipped to POBOX via FedEx (1 Day Ground, Standard Overnight, 2 Day Air)
