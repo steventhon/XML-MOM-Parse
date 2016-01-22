@@ -123,7 +123,7 @@ def add_years(d, years):
     try:
         return d.replace(year = d.year + years)
     except ValueError:
-        return d + (date(d.year + years, 1, 1) - date(d.year, 1, 1))
+        return d + (datetime(d.year + years, 1, 1).date() - datetime(d.year, 1, 1).date())
 
 # Set the hold date to current date plus 'holdYears' years
 def setHolddate(root, holdYears):
