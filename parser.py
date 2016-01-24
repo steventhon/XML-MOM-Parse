@@ -105,9 +105,9 @@ def checkHold(root):
     log += 'Shipvia: Changed ' + shipvia + ' to UG\n'
     root.find('shipvia').text = 'UG'
     hold = True
-  # Return True if order is being shipped to POBOX via FedEx (1 Day Ground, Standard Overnight, 2 Day Air)
-  if 'POBOX' in root.find('saddress1').text  and shipvia in poboxShippingsToHold:
-    log += 'Saddress1 and Shipvia: POBOX and ' + shipvia + '\n'
+  # Return True if order is being shipped to a possible P.O. Box via FedEx (1 Day Ground, Standard Overnight, 2 Day Air)
+  if ('p' == root.find('saddress1').text.lower or 'p' == root.find('saddress2').text.lower) and shipvia in poboxShippingsToHold:
+    log += 'Saddress1/Saddress2 and Shipvia: Possible P.O. Box ship and ' + shipvia + '\n'
     hold = True
     
   # Returns False if no condition is met
