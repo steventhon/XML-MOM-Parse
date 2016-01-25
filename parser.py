@@ -150,23 +150,23 @@ def main():
 		log = ''
 		print 'Looking in .xml file: ' + file
 		root = ET.parse(file).getroot()
-		# Start at the more relevant root: import_ca
-		subroot = root[0]
-		# Check the shipping methods and add custom info if needed
-		checkShipping(subroot)
-		# Check and add holddate if conditions are met
-		olog, onHold = checkHold(subroot)
-		log += olog
-		if (onHold):
-			# Set hold date by X number of years from now
-			log += setHolddate(subroot, 4)
-			# Write tree back to XML file
-			ET.ElementTree(root).write(file)
-			orderlog += 'Alternate Order #' + file[11:-4] + '\n' + log + '\n'
+		# For each suborder in the order
+		for subroot in root:
+			# Check the shipping methods and add custom info if needed
+			checkShipping(subroot)
+			# Check and add holddate if conditions are met
+			olog, onHold = checkHold(subroot)
+			log += olog
+			if (onHold):
+				# Set hold date by X number of years from now
+				log += setHolddate(subroot, 4)
+				orderlog += 'Alternate Order #' + file[11:-4] + '\n' + log + '\n'
     if orderlog != '':
 	    # open file to write order log in
         f = open('C:\Users\Administrator\Desktop\logsXtento\orders_' + datetime.now().strftime("%y-%m-%d_%H_%M") + '.txt', 'w')
         f.write(orderlog)
+        # Write tree back to XML file
+		ET.ElementTree(root).write(file)
 
   #file = ''
   #for line in fileinput.input():
