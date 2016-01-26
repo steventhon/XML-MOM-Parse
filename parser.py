@@ -178,6 +178,14 @@ def createRescueProduct(root):
                 sub.find('discount0' + str(i)).text = '0.0000'
                 break
 
+# Removes substring from end of string if exists
+def removeEnd(root, end):
+	for i in range(1, 6):
+        if (root.find('product0' + str(i)).text is None):
+        	break
+        elif (root.find('product0' + str(i)).text[-len(end):] == end):
+        	root.find('product0' + str(i)).text = root.find('product0' + str(i)).text[:-len(end)]
+
 # Main function to run script
 def main():
   # Path of the working directory to change to for parsing
@@ -204,6 +212,7 @@ def main():
 			olog, onHold = checkHold(subroot)
 			log += olog
 			if (onHold):
+				removeEnd(subroot, "_rescue")
 				log += 'Found hold in products ' + count + '-' + count + 4
 				# Set hold date by X number of years from now
 				log += setHolddate(subroot, 4)
