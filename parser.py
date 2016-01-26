@@ -133,6 +133,135 @@ def setHolddate(root, holdYears):
   root.find('holddate').text = str(holddate)
   return 'Hold date set to: ' + str(holddate) + '\n'
 
+# Create a subelement for suborder to add virtual rescue prooduct
+def createRescueProduct(root):
+	# If the last suborder is full, make a new one
+    lastSubOrder = len(root.findall('import_ca')) - 1
+    if (root[lastSubOrder].find('product05').text is not None):
+        rescueSubelement = ET.fromstring(
+        """
+        <import_ca>
+        <altnum/>
+	    <lastname/>
+	    <firstname/>
+	    <company/>
+	    <address1/>
+	    <address2/>
+	    <city/>
+	    <state/>
+	    <zipcode/>
+	    <cforeign/>
+	    <phone/>
+	    <comment/>
+	    <ctype1/>
+	    <ctype2/>
+	    <ctype3/>
+	    <taxexempt/>
+	    <prospect/>
+	    <cardtype/>
+	    <cardnum/>
+	    <expires/>
+	    <source_key/>
+	    <ccatalog/>
+	    <sales_id/>
+	    <oper_id/>
+	    <shipvia/>
+	    <fulfilled/>
+	    <paid/>
+	    <continued>Y</continued>
+	    <useprices>Y</useprices>
+	    <multiship>F</multiship>
+	    <order_date/>
+	    <odr_num>0</odr_num>
+	    <product01>98PP20</product01>
+	    <quantity01>1.0000</quantity01>
+	    <product02/>
+	    <quantity02/>
+	    <product03/>
+	    <quantity03/>
+	    <product04/>
+	    <quantity04/>
+	    <product05/>
+	    <quantity05/>
+	    <price01>0.0000</price01>
+	    <discount01>0.0000</discount01>
+	    <price02/>
+	    <discount02/>
+	    <price03/>
+	    <discount03/>
+	    <price04/>
+	    <discount04/>
+	    <price05/>
+	    <discount05/>
+	    <slastname/>
+	    <sfirstname/>
+	    <scompany/>
+	    <saddress1/>
+	    <saddress2/>
+	    <scity/>
+	    <sstate/>
+	    <szipcode/>
+	    <holddate/>
+	    <paymethod/>
+	    <greeting1/>
+	    <greeting2/>
+	    <promocred/>
+	    <shipping/>
+	    <email/>
+	    <country/>
+	    <scountry/>
+	    <phone2/>
+	    <sphone/>
+	    <sphone2/>
+	    <semail/>
+	    <ordertype/>
+	    <inpart/>
+	    <title/>
+	    <salu/>
+	    <hono/>
+	    <ext/>
+	    <ext2/>
+	    <stitle/>
+	    <ssalu/>
+	    <shono/>
+	    <sext/>
+	    <sext2/>
+	    <ship_when/>
+	    <greeting3/>
+	    <greeting4/>
+	    <greeting5/>
+	    <greeting6/>
+	    <password/>
+	    <custom01/>
+	    <custom02/>
+	    <custom03/>
+	    <custom04/>
+	    <custom05/>
+	  	</import_ca>
+        """)
+        rescueSubelement.find('slastname').text = root[0].find('slastname').text
+        rescueSubelement.find('sfirstname').text = root[0].find('sfirstname').text
+        rescueSubelement.find('saddress1').text = root[0].find('saddress1').text
+        rescueSubelement.find('saddress2').text = root[0].find('saddress2').text
+        rescueSubelement.find('scity').text = root[0].find('scity').text
+        rescueSubelement.find('sstate').text = root[0].find('sstate').text
+        rescueSubelement.find('szipcode').text = root[0].find('szipcode').text
+        rescueSubelement.find('scountry').text = root[0].find('scountry').text
+        rescueSubelement.find('sphone').text = root[0].find('sphone').text
+        rescueSubelement.find('semail').text = root[0].find('semail').text
+        rescueSubelement.find('sphone').text = root[0].find('sphone').text
+        root.append(rescueSubelement)
+    else:
+        sub = root[lastSubOrder]
+        # Loop through products 1 to 5 and set first None product
+        for i in range(1, 6):
+            if (sub.find('product0' + str(i)).text is None):
+                sub.find('product0' + str(i)).text = '98PP20'
+                sub.find('quantity0' + str(i)).text = '1.0000'
+                sub.find('price0' + str(i)).text = '0.0000'
+                sub.find('discount0' + str(i)).text = '0.0000'
+                break
+
 # Main function to run script
 def main():
   # Path of the working directory to change to for parsing
