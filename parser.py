@@ -148,6 +148,7 @@ def main():
     # For each XML file, parse each
     for file in files:
 		log = ''
+		count = 1
 		print 'Looking in .xml file: ' + file
 		root = ET.parse(file).getroot()
 		# For each suborder in the order
@@ -158,9 +159,11 @@ def main():
 			olog, onHold = checkHold(subroot)
 			log += olog
 			if (onHold):
+				log += 'Found hold in products ' + count + '-' + count + 4
 				# Set hold date by X number of years from now
 				log += setHolddate(subroot, 4)
 				orderlog += 'Alternate Order #' + file[11:-4] + '\n' + log + '\n'
+			count += 5
     if orderlog != '':
 	    # open file to write order log in
         f = open('C:\Users\Administrator\Desktop\logsXtento\orders_' + datetime.now().strftime("%y-%m-%d_%H_%M") + '.txt', 'w')
