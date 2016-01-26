@@ -138,107 +138,23 @@ def createRescueProduct(root):
 	# If the last suborder is full, make a new one
     lastSubOrder = len(root.findall('import_ca')) - 1
     if (root[lastSubOrder].find('product05').text is not None):
-        rescueSubelement = ET.fromstring(
-        """
-        <import_ca>
-        <altnum/>
-	    <lastname/>
-	    <firstname/>
-	    <company/>
-	    <address1/>
-	    <address2/>
-	    <city/>
-	    <state/>
-	    <zipcode/>
-	    <cforeign/>
-	    <phone/>
-	    <comment/>
-	    <ctype1/>
-	    <ctype2/>
-	    <ctype3/>
-	    <taxexempt/>
-	    <prospect/>
-	    <cardtype/>
-	    <cardnum/>
-	    <expires/>
-	    <source_key/>
-	    <ccatalog/>
-	    <sales_id/>
-	    <oper_id/>
-	    <shipvia/>
-	    <fulfilled/>
-	    <paid/>
-	    <continued>Y</continued>
-	    <useprices>Y</useprices>
-	    <multiship>F</multiship>
-	    <order_date/>
-	    <odr_num>0</odr_num>
-	    <product01>98PP20</product01>
-	    <quantity01>1.0000</quantity01>
-	    <product02/>
-	    <quantity02/>
-	    <product03/>
-	    <quantity03/>
-	    <product04/>
-	    <quantity04/>
-	    <product05/>
-	    <quantity05/>
-	    <price01>0.0000</price01>
-	    <discount01>0.0000</discount01>
-	    <price02/>
-	    <discount02/>
-	    <price03/>
-	    <discount03/>
-	    <price04/>
-	    <discount04/>
-	    <price05/>
-	    <discount05/>
-	    <slastname/>
-	    <sfirstname/>
-	    <scompany/>
-	    <saddress1/>
-	    <saddress2/>
-	    <scity/>
-	    <sstate/>
-	    <szipcode/>
-	    <holddate/>
-	    <paymethod/>
-	    <greeting1/>
-	    <greeting2/>
-	    <promocred/>
-	    <shipping/>
-	    <email/>
-	    <country/>
-	    <scountry/>
-	    <phone2/>
-	    <sphone/>
-	    <sphone2/>
-	    <semail/>
-	    <ordertype/>
-	    <inpart/>
-	    <title/>
-	    <salu/>
-	    <hono/>
-	    <ext/>
-	    <ext2/>
-	    <stitle/>
-	    <ssalu/>
-	    <shono/>
-	    <sext/>
-	    <sext2/>
-	    <ship_when/>
-	    <greeting3/>
-	    <greeting4/>
-	    <greeting5/>
-	    <greeting6/>
-	    <password/>
-	    <custom01/>
-	    <custom02/>
-	    <custom03/>
-	    <custom04/>
-	    <custom05/>
-	  	</import_ca>
-        """)
+        rescueSubelement = ET.fromstring("""<import_ca>\n    <altnum/>\n    <lastname/>
+    <firstname/>\n    <company/>\n    <address1/>\n    <address2/>\n    <city/>\n    <state/>\n    <zipcode/>
+    <cforeign/>\n    <phone/>\n    <comment/>\n    <ctype1/>\n    <ctype2/>\n    <ctype3/>\n    <taxexempt/>
+    <prospect/>\n    <cardtype/>\n    <cardnum/>\n    <expires/>\n    <source_key/>\n    <ccatalog/>
+    <sales_id/>\n    <oper_id/>\n    <shipvia/>\n    <fulfilled/>\n    <paid/>\n    <continued>Y</continued>
+    <useprices>Y</useprices>\n    <multiship>F</multiship>\n    <order_date/>\n    <odr_num>0</odr_num>
+    <product01>98PP20</product01>\n    <quantity01>1.0000</quantity01>
+    <product02/>\n    <quantity02/>\n    <product03/>\n    <quantity03/>\n    <product04/>\n    <quantity04/>
+    <product05/>\n    <quantity05/>\n    <price01>0.0000</price01>\n    <discount01>0.0000</discount01>
+    <price02/>\n    <discount02/>\n    <price03/>\n    <discount03/>\n    <price04/>
+    <discount04/>\n    <price05/>\n    <discount05/>\n    <slastname/>\n    <sfirstname/>\n    <scompany/>
+    <saddress1/>\n    <saddress2/>\n    <scity/>\n    <sstate/>\n    <szipcode/>\n    <holddate/>\n    <paymethod/>
+    <greeting1/>\n    <greeting2/>\n    <promocred/>\n    <shipping/>\n    <email/>\n    <country/>\n    <scountry/>
+    <phone2/>\n    <sphone/>\n    <sphone2/>\n    <semail/>\n    <ordertype/>\n    <inpart/>\n    <title/>\n    <salu/>
+    <hono/>\n    <ext/>\n    <ext2/>\n    <stitle/>\n    <ssalu/>\n    <shono/>\n    <sext/>\n    <sext2/>
+    <ship_when/>\n    <greeting3/>\n    <greeting4/>\n    <greeting5/>\n    <greeting6/>\n    <password/>\n    <custom01/>
+    <custom02/>\n    <custom03/>\n    <custom04/>\n    <custom05/>\n  </import_ca>""")
         rescueSubelement.find('slastname').text = root[0].find('slastname').text
         rescueSubelement.find('sfirstname').text = root[0].find('sfirstname').text
         rescueSubelement.find('saddress1').text = root[0].find('saddress1').text
