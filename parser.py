@@ -217,16 +217,16 @@ def main():
 			olog, onHold = checkHold(subroot)
 			if (onHold):
 				log += 'Found hold in products ' + str(count) + '-' + str(count + 4) + '\n' + olog
-				# Set hold date by X number of years from now
-				log += setHolddate(subroot, 4)
 			count += 5
 		# If a rescue product was found, add the virtual rescue product
 		if ('_rescue' in log):
 			for subroot in root:
 				removeEnd(subroot, "_rescue")
 			orderlog += createRescueProduct(root)
+		# If order is on hold
 		if onHold:
-			orderlog += 'Alternate Order #' + file[11:-4] + '\n' + log + '\n'
+			# Set hold date by X number of years from now
+			orderlog += 'Alternate Order #' + file[11:-4] + '\n' + log + setHolddate(root[0], 4) + '\n'
 			# Write tree back to XML file
 			ET.ElementTree(root).write(file)
 	# If something went on hold
