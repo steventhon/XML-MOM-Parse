@@ -133,12 +133,13 @@ def setHolddate(root, holdYears):
   root.find('holddate').text = str(holddate)
   return 'Hold date set to: ' + str(holddate) + '\n'
 
-# Create a subelement for suborder to add virtual rescue prooduct
+# Create a subelement for suborder to add virtual rescue product
 def createRescueProduct(root):
+	log=""
 	# If the last suborder is full, make a new one
-    lastSubOrder = len(root.findall('import_ca')) - 1
-    if (root[lastSubOrder].find('product05').text is not None):
-        rescueSubelement = ET.fromstring("""<import_ca>\n    <altnum/>\n    <lastname/>
+	lastSubOrder = len(root.findall('import_ca')) - 1
+	if (root[lastSubOrder].find('product05').text is not None):
+		rescueSubelement = ET.fromstring("""<import_ca>\n    <altnum/>\n    <lastname/>
     <firstname/>\n    <company/>\n    <address1/>\n    <address2/>\n    <city/>\n    <state/>\n    <zipcode/>
     <cforeign/>\n    <phone/>\n    <comment/>\n    <ctype1/>\n    <ctype2/>\n    <ctype3/>\n    <taxexempt/>
     <prospect/>\n    <cardtype/>\n    <cardnum/>\n    <expires/>\n    <source_key/>\n    <ccatalog/>
@@ -155,36 +156,39 @@ def createRescueProduct(root):
     <hono/>\n    <ext/>\n    <ext2/>\n    <stitle/>\n    <ssalu/>\n    <shono/>\n    <sext/>\n    <sext2/>
     <ship_when/>\n    <greeting3/>\n    <greeting4/>\n    <greeting5/>\n    <greeting6/>\n    <password/>\n    <custom01/>
     <custom02/>\n    <custom03/>\n    <custom04/>\n    <custom05/>\n  </import_ca>""")
-        rescueSubelement.find('slastname').text = root[0].find('slastname').text
-        rescueSubelement.find('sfirstname').text = root[0].find('sfirstname').text
-        rescueSubelement.find('saddress1').text = root[0].find('saddress1').text
-        rescueSubelement.find('saddress2').text = root[0].find('saddress2').text
-        rescueSubelement.find('scity').text = root[0].find('scity').text
-        rescueSubelement.find('sstate').text = root[0].find('sstate').text
-        rescueSubelement.find('szipcode').text = root[0].find('szipcode').text
-        rescueSubelement.find('scountry').text = root[0].find('scountry').text
-        rescueSubelement.find('sphone').text = root[0].find('sphone').text
-        rescueSubelement.find('semail').text = root[0].find('semail').text
-        rescueSubelement.find('sphone').text = root[0].find('sphone').text
-        root.append(rescueSubelement)
-    else:
-        sub = root[lastSubOrder]
-        # Loop through products 1 to 5 and set first None product
-        for i in range(1, 6):
-            if (sub.find('product0' + str(i)).text is None):
-                sub.find('product0' + str(i)).text = '98PP20'
-                sub.find('quantity0' + str(i)).text = '1.0000'
-                sub.find('price0' + str(i)).text = '0.0000'
-                sub.find('discount0' + str(i)).text = '0.0000'
-                break
+		rescueSubelement.find('slastname').text = root[0].find('slastname').text
+		rescueSubelement.find('sfirstname').text = root[0].find('sfirstname').text
+		rescueSubelement.find('saddress1').text = root[0].find('saddress1').text
+		rescueSubelement.find('saddress2').text = root[0].find('saddress2').text
+		rescueSubelement.find('scity').text = root[0].find('scity').text
+		rescueSubelement.find('sstate').text = root[0].find('sstate').text
+		rescueSubelement.find('szipcode').text = root[0].find('szipcode').text
+		rescueSubelement.find('scountry').text = root[0].find('scountry').text
+		rescueSubelement.find('sphone').text = root[0].find('sphone').text
+		rescueSubelement.find('semail').text = root[0].find('semail').text
+		rescueSubelement.find('sphone').text = root[0].find('sphone').text
+		root.append(rescueSubelement)
+		log += "_rescue found. Virtual rescue product created\n"
+	else:
+		sub = root[lastSubOrder]
+        # Loop through products 1 to 5 and set first None product to rescue virtual product
+		for i in range(1, 6):
+			if (sub.find('product0' + str(i)).text is None):
+				sub.find('product0' + str(i)).text = '98PP20'
+				sub.find('quantity0' + str(i)).text = '1.0000'
+				sub.find('price0' + str(i)).text = '0.0000'
+				sub.find('discount0' + str(i)).text = '0.0000'
+				break
+		log += "_rescue found. Virtual rescue product created\n"
+	return log
 
 # Removes substring from end of string if exists
 def removeEnd(root, end):
 	for i in range(1, 6):
-        if (root.find('product0' + str(i)).text is None):
-        	break
-        elif (root.find('product0' + str(i)).text[-len(end):] == end):
-        	root.find('product0' + str(i)).text = root.find('product0' + str(i)).text[:-len(end)]
+		if (root.find('product0' + str(i)).text is None):
+			break
+		elif (root.find('product0' + str(i)).text[-len(end):] == end):
+			root.find('product0' + str(i)).text = root.find('product0' + str(i)).text[:-len(end)]
 
 # Main function to run script
 def main():
@@ -202,6 +206,7 @@ def main():
     for file in files:
 		log = ''
 		count = 1
+		onHold = False
 		print 'Looking in .xml file: ' + file
 		root = ET.parse(file).getroot()
 		# For each suborder in the order
@@ -212,18 +217,24 @@ def main():
 			olog, onHold = checkHold(subroot)
 			log += olog
 			if (onHold):
-				removeEnd(subroot, "_rescue")
-				log += 'Found hold in products ' + count + '-' + count + 4
+				log += 'Found hold in products ' + str(count) + '-' + str(count + 4) + '\n'
 				# Set hold date by X number of years from now
 				log += setHolddate(subroot, 4)
-				orderlog += 'Alternate Order #' + file[11:-4] + '\n' + log + '\n'
 			count += 5
+		# If a rescue product was found, add the virtual rescue product
+		if ('_rescue' in log):
+			for subroot in root:
+				removeEnd(subroot, "_rescue")
+			orderlog += createRescueProduct(root)
+		if onHold:
+			orderlog += 'Alternate Order #' + file[11:-4] + '\n' + log + '\n'
+			# Write tree back to XML file
+			ET.ElementTree(root).write(file)
+	# If something went on hold
     if orderlog != '':
-	    # open file to write order log in
-        f = open('C:\Users\Administrator\Desktop\logsXtento\orders_' + datetime.now().strftime("%y-%m-%d_%H_%M") + '.txt', 'w')
-        f.write(orderlog)
-        # Write tree back to XML file
-		ET.ElementTree(root).write(file)
+	    # Open file to write order log in
+		f = open('C:\Users\Administrator\Desktop\logsXtento\orders_' + datetime.now().strftime("%y-%m-%d_%H_%M") + '.txt', 'w')
+		f.write(orderlog)
 
   #file = ''
   #for line in fileinput.input():
