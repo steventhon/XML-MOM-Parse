@@ -215,9 +215,8 @@ def main():
 			checkShipping(subroot)
 			# Check and add holddate if conditions are met
 			olog, onHold = checkHold(subroot)
-			log += olog
 			if (onHold):
-				log += 'Found hold in products ' + str(count) + '-' + str(count + 4) + '\n'
+				log += 'Found hold in products ' + str(count) + '-' + str(count + 4) + '\n' + olog
 				# Set hold date by X number of years from now
 				log += setHolddate(subroot, 4)
 			count += 5
