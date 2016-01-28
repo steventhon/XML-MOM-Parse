@@ -113,7 +113,7 @@ def checkHold(root):
     hold = True
   
   # Return True if promocode is a set discount (ends with "!")
-  if (root.find('promo_code').text is not None and root.find('promo_code').text[-1:] == '!')
+  if (root.find('promo_code').text is not None and root.find('promo_code').text[-1:] == '!'):
     log += "promo_code '" + root.find('promo_code').text + "' is a set amount (ends with '!')\nCoupon code in MOM\n"
     hold = True
   
