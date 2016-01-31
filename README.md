@@ -1,2 +1,4 @@
 # XML-MOM-Parse
-Script that parses and edits an XML file from Xtento before being sent to MOM
+Script that parses and processes an XML file exported from Xtento before MOM imports it
+
+Xtento -> here(I process it) -> MOM
