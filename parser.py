@@ -10,7 +10,7 @@ import fileinput
 # List of specific product SKUs to set to hold
 skusToHold = ["04HS90", "19PS01"]
 # List of substrings of specific product SKUs to set to hold
-subskusToHold = ["01HS", "01PP", "02CW", "02DD", "02SS", "04AM", "04RIG1", "04SF", "05HS", "06HS", "12BW", "19HSIFC", "fg", "_rescue"]
+subskusToHold = ["01HS", "01RI97", "02CW", "02DD", "02SS", "04AM", "04RIG1", "04SF", "05HS", "06HS", "12BW", "19HSIFC", "fg", "_rescue"]
 # List of shipping methods to hold if shipped to POBOX
 poboxShippingsToHold = ["1GD", "FES", "FE2"]
 # List of shipping methods to check to cover drop-shipped products
@@ -85,6 +85,12 @@ def checkHold(root):
     #print 'Found an element of subsku list as a substring of an element in products list'
     log += 'Found Product Partial SKUs: ' + ', '.join(list) + '\n'
     hold = True
+
+  # Return True if product contains SKU '01PPC' and ('X', 'Y', or 'Z')
+  list = [product for product in products if "01PPC" in product and any(custom in product for custom in ('X','Y','Z'))]
+  if list:
+	log += 'Custom Thermo Panel(s). Make sure correct height selected: ' + ', '.join(list) + '\n'
+	hold = True
 
   shipvia = root.find('shipvia').text
   
