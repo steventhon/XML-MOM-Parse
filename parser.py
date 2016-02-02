@@ -46,7 +46,7 @@ def removeExceptions(products):
       if subsku in sku:
         products.remove(sku)
   return products
-
+  
 # Create a subelement for suborder to add virtual rescue product
 def createRescueProduct(root):
 	log=""
@@ -124,9 +124,25 @@ def createProductList(root):
 def checkProducts(products):
   log = ''
   
-  # If two or more products are ordered
+  # If a product has a Hale Petdoor with same interior and exterior color 
+  intColor = [product for product in products if "19HSifc" in product]
+  extColor = [product for product in products if "03HS" in product or "04HS" in product]
+  load = [product for product in products if "11hsld" in product]
+  list = [int for int in intColor for ext in extColor if int[-1] == ext[-2]]
+  if list:
+	log += 'Found Hale Petdoor with the same interior and exterior color: ' + ', '.join(intColor) + '. Contact customer about matching colors.\n'
+  # Remove from products to check
+  products = [product for product in products if product not in intColor + extColor + load]
+  
+  # If a product contains SKU '01PPC' and ('X', 'Y', or 'Z')
+  list = [product for product in products if "01PPC" in product and any(custom in product for custom in ('X','Y','Z'))]
+  if list:
+    products = [product for product in products if product not in list]
+    log += 'Custom Thermo Panel(s). Make sure correct height selected: ' + ', '.join(list) + '\n'
+  
+  # If two or more products are ordered to check
   if len(products) >= 2:
-    log += 'Found two or more products being ordered: ' + ', '.join(products) + '\n'
+    log += 'Found two or more products being ordered to check: ' + ', '.join(products) + '\n'
   
   list = [sku for sku in skusToHold if sku in products]
   # If any of the products' skus is in skus list
@@ -137,12 +153,7 @@ def checkProducts(products):
   # If any of the products' substrings is in subskus list
   if list:
     log += 'Found Product Partial SKUs: ' + ', '.join(list) + '\n'
-
-  # If product contains SKU '01PPC' and ('X', 'Y', or 'Z')
-  list = [product for product in products if "01PPC" in product and any(custom in product for custom in ('X','Y','Z'))]
-  if list:
-	log += 'Custom Thermo Panel(s). Make sure correct height selected: ' + ', '.join(list) + '\n'
-	
+  
   return log
   
 # checkHold returns a log if any hold condition is met
@@ -223,6 +234,7 @@ def main():
     # For each XML file, parse each
     for file in files:
 		log = ''
+		ship = ''
 		products = []
 		print 'Looking in .xml file: ' + file
 		root = ET.parse(file).getroot()
@@ -233,6 +245,7 @@ def main():
 		if log:
 			# Set hold date by X number of years from now
 			orderlog += 'Alternate Order #' + file[11:-4] + '\n' + log + setHolddate(root[0], 4) + '\n'
+		if log or ship:
 			# Write tree back to XML file
 			ET.ElementTree(root).write(file)
 	# If something went on hold in any of the files
