@@ -140,20 +140,22 @@ def checkProducts(products):
     products = [product for product in products if product not in list]
     log += 'Custom Thermo Panel(s). Make sure correct height selected: ' + ', '.join(list) + '\n'
   
-  # If two or more products are ordered to check
-  if len(products) >= 2:
-    log += 'Found two or more products being ordered to check: ' + ', '.join(products) + '\n'
-  
   list = [sku for sku in skusToHold if sku in products]
   # If any of the products' skus is in skus list
   if list:
+    products = [product for product in products if product not in skusToHold]
     log += 'Found Product SKUs: ' + ', '.join(list) + '\n'
 
   list = [sku for subsku in subskusToHold for sku in products if subsku in sku]
   # If any of the products' substrings is in subskus list
   if list:
+    products = [product for product in products if product not in subskusToHold]
     log += 'Found Product Partial SKUs: ' + ', '.join(list) + '\n'
   
+  # If two or more products are ordered to check
+  if len(products) >= 2:
+    log += 'Found two or more products being ordered to check: ' + ', '.join(products) + '\n'
+
   return log
   
 # checkHold returns a log if any hold condition is met
