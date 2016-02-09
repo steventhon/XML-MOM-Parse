@@ -47,13 +47,9 @@ def removeExceptions(products):
         products.remove(sku)
   return products
   
-# Create a subelement for suborder to add virtual rescue product
-def createRescueProduct(root):
-	log=""
-	# If the last suborder is full, make a new one
-	lastSubOrder = len(root.findall('import_ca')) - 1
-	if (root[lastSubOrder].find('product05').text is not None):
-		rescueSubelement = ET.fromstring("""<import_ca>\n    <altnum/>\n    <lastname/>
+# Add a suborder to order
+def addSuborder(root):
+    suborder = ET.fromstring("""<import_ca>\n    <altnum/>\n    <lastname/>
     <firstname/>\n    <company/>\n    <address1/>\n    <address2/>\n    <city/>\n    <state/>\n    <zipcode/>
     <cforeign/>\n    <phone/>\n    <comment/>\n    <ctype1/>\n    <ctype2/>\n    <ctype3/>\n    <taxexempt/>
     <prospect/>\n    <cardtype/>\n    <cardnum/>\n    <expires/>\n    <source_key/>\n    <ccatalog/>
@@ -70,18 +66,26 @@ def createRescueProduct(root):
     <hono/>\n    <ext/>\n    <ext2/>\n    <stitle/>\n    <ssalu/>\n    <shono/>\n    <sext/>\n    <sext2/>
     <ship_when/>\n    <greeting3/>\n    <greeting4/>\n    <greeting5/>\n    <greeting6/>\n    <password/>\n    <custom01/>
     <custom02/>\n    <custom03/>\n    <custom04/>\n    <custom05/>\n  </import_ca>""")
-		rescueSubelement.find('slastname').text = root[0].find('slastname').text
-		rescueSubelement.find('sfirstname').text = root[0].find('sfirstname').text
-		rescueSubelement.find('saddress1').text = root[0].find('saddress1').text
-		rescueSubelement.find('saddress2').text = root[0].find('saddress2').text
-		rescueSubelement.find('scity').text = root[0].find('scity').text
-		rescueSubelement.find('sstate').text = root[0].find('sstate').text
-		rescueSubelement.find('szipcode').text = root[0].find('szipcode').text
-		rescueSubelement.find('scountry').text = root[0].find('scountry').text
-		rescueSubelement.find('sphone').text = root[0].find('sphone').text
-		rescueSubelement.find('semail').text = root[0].find('semail').text
-		rescueSubelement.find('sphone').text = root[0].find('sphone').text
-		root.append(rescueSubelement)
+    suborder.find('slastname').text = root[0].find('slastname').text
+    suborder.find('sfirstname').text = root[0].find('sfirstname').text
+    suborder.find('saddress1').text = root[0].find('saddress1').text
+    suborder.find('saddress2').text = root[0].find('saddress2').text
+    suborder.find('scity').text = root[0].find('scity').text
+    suborder.find('sstate').text = root[0].find('sstate').text
+    suborder.find('szipcode').text = root[0].find('szipcode').text
+    suborder.find('scountry').text = root[0].find('scountry').text
+    suborder.find('sphone').text = root[0].find('sphone').text
+    suborder.find('semail').text = root[0].find('semail').text
+    suborder.find('sphone').text = root[0].find('sphone').text
+    root.append(suborder)
+  
+# Create a subelement for suborder to add virtual rescue product
+def createRescueProduct(root):
+	log=""
+	# If the last suborder is full, make a new one
+	lastSubOrder = len(root.findall('import_ca')) - 1
+	if (root[lastSubOrder].find('product05').text is not None):
+		addSuborder(root)
 		log += "_rescue found. Virtual rescue product created\n"
 	else:
 		sub = root[lastSubOrder]
