@@ -79,6 +79,15 @@ def addSuborder(root):
     suborder.find('sphone').text = root[0].find('sphone').text
     root.append(suborder)
   
+# 
+#def unbundle(root, product):
+# additionalproducts = (num of products % 5) + count
+# while additionalproducts > 5 (add products to end of last suborder first)
+# 	addSuborder
+# 	put products in suborder
+# 	additionalproducts -= 5
+
+  
 # Create a subelement for suborder to add virtual rescue product
 def createRescueProduct(root):
 	log=""
@@ -262,7 +271,7 @@ def main():
 
   #file = ''
   #for line in fileinput.input():
-    #file = file + line
+    #file += line
   
   #root = ET.fromstring(file)
   
