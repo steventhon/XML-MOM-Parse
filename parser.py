@@ -265,17 +265,6 @@ def main():
     #file = file + line
   
   #root = ET.fromstring(file)
-
-  #if (checkHold(root[0])):
-  #setHolddate(root[0], 3)
-  #print "holddate:" + root[0].find('holddate').text
-    
-  # print each child and its text value
-  #for child in root[0]:
-  #	print child, child.tag, child.text
-  	
-  # Write tree back to XML file
-  # ET.ElementTree(root).write(file)
   
   # Prints out XML of root for debugging purposes
   # ET.dump(root)
