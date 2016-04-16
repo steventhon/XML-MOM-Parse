@@ -9,10 +9,10 @@ import fileinput
 
 # List of specific product SKUs to set to hold
 skusToHold = ["04HS90", "19PS01"]
-# List of substrings of specific product SKUs to set to hold
-subskusToHold = ["01HS", "01RI97", "02CW", "02DD", "02SS", "04AM", "04RIG1", "04SF", "05HS", "06HS", "19HSIFC"]
+# List of starts-with substrings of specific product SKUs to set to hold
+startsWithToHold = ["01HS", "01RI97", "02CW", "02DD", "02SS", "04AM", "04RIG1", "04SF", "05HS", "06HS", "19HSIFC", "40"]
 # List of shipping methods to hold if shipped to POBOX
-poboxShippingsToHold = ["1GD", "FES", "FE2"]
+poboxShippingsToHold = ["1GD", "FES", "FE2", "UG"]
 # List of shipping methods to check to cover drop-shipped products
 shippingsToCheck = ["FES", "FE2"]
 # List of subskus that do not need to go on hold
@@ -47,9 +47,13 @@ def removeExceptions(products):
         products.remove(sku)
   return products
   
-# Add a suborder to order
-def addSuborder(root):
-    suborder = ET.fromstring("""<import_ca>\n    <altnum/>\n    <lastname/>
+# Create a subelement for suborder to add virtual rescue product
+def createRescueProduct(root):
+	log=""
+	# If the last suborder is full, make a new one
+	lastSubOrder = len(root.findall('import_ca')) - 1
+	if (root[lastSubOrder].find('product05').text is not None):
+		rescueSubelement = ET.fromstring("""<import_ca>\n    <altnum/>\n    <lastname/>
     <firstname/>\n    <company/>\n    <address1/>\n    <address2/>\n    <city/>\n    <state/>\n    <zipcode/>
     <cforeign/>\n    <phone/>\n    <comment/>\n    <ctype1/>\n    <ctype2/>\n    <ctype3/>\n    <taxexempt/>
     <prospect/>\n    <cardtype/>\n    <cardnum/>\n    <expires/>\n    <source_key/>\n    <ccatalog/>
@@ -66,35 +70,18 @@ def addSuborder(root):
     <hono/>\n    <ext/>\n    <ext2/>\n    <stitle/>\n    <ssalu/>\n    <shono/>\n    <sext/>\n    <sext2/>
     <ship_when/>\n    <greeting3/>\n    <greeting4/>\n    <greeting5/>\n    <greeting6/>\n    <password/>\n    <custom01/>
     <custom02/>\n    <custom03/>\n    <custom04/>\n    <custom05/>\n  </import_ca>""")
-    suborder.find('slastname').text = root[0].find('slastname').text
-    suborder.find('sfirstname').text = root[0].find('sfirstname').text
-    suborder.find('saddress1').text = root[0].find('saddress1').text
-    suborder.find('saddress2').text = root[0].find('saddress2').text
-    suborder.find('scity').text = root[0].find('scity').text
-    suborder.find('sstate').text = root[0].find('sstate').text
-    suborder.find('szipcode').text = root[0].find('szipcode').text
-    suborder.find('scountry').text = root[0].find('scountry').text
-    suborder.find('sphone').text = root[0].find('sphone').text
-    suborder.find('semail').text = root[0].find('semail').text
-    suborder.find('sphone').text = root[0].find('sphone').text
-    root.append(suborder)
-  
-# 
-#def unbundle(root, product):
-# additionalproducts = (num of products % 5) + count
-# while additionalproducts > 5 (add products to end of last suborder first)
-# 	addSuborder
-# 	put products in suborder
-# 	additionalproducts -= 5
-
-  
-# Create a subelement for suborder to add virtual rescue product
-def createRescueProduct(root):
-	log=""
-	# If the last suborder is full, make a new one
-	lastSubOrder = len(root.findall('import_ca')) - 1
-	if (root[lastSubOrder].find('product05').text is not None):
-		addSuborder(root)
+		rescueSubelement.find('slastname').text = root[0].find('slastname').text
+		rescueSubelement.find('sfirstname').text = root[0].find('sfirstname').text
+		rescueSubelement.find('saddress1').text = root[0].find('saddress1').text
+		rescueSubelement.find('saddress2').text = root[0].find('saddress2').text
+		rescueSubelement.find('scity').text = root[0].find('scity').text
+		rescueSubelement.find('sstate').text = root[0].find('sstate').text
+		rescueSubelement.find('szipcode').text = root[0].find('szipcode').text
+		rescueSubelement.find('scountry').text = root[0].find('scountry').text
+		rescueSubelement.find('sphone').text = root[0].find('sphone').text
+		rescueSubelement.find('semail').text = root[0].find('semail').text
+		rescueSubelement.find('sphone').text = root[0].find('sphone').text
+		root.append(rescueSubelement)
 		log += "_rescue found. Virtual rescue product created\n"
 	else:
 		sub = root[lastSubOrder]
@@ -153,17 +140,17 @@ def checkProducts(products):
     products = [product for product in products if product not in list]
     log += 'Custom Thermo Panel(s). Make sure correct height selected: ' + ', '.join(list) + '\n'
   
-  list = [sku for sku in skusToHold if sku in products]
+  list = [product for product in products if product in skusToHold]
   # If any of the products' skus is in skus list
   if list:
-    products = [product for product in products if product not in skusToHold]
+    products = [product for product in products if product not in list]
     log += 'Found Product SKUs: ' + ', '.join(list) + '\n'
 
-  list = [sku for subsku in subskusToHold for sku in products if subsku in sku]
-  # If any of the products' substrings is in subskus list
+  list = [product for product in products if product.startswith(tuple(startsWithToHold))]
+  # If any of the products starts with any of the substrings in starts-with list
   if list:
-    products = [product for product in products if product not in subskusToHold]
-    log += 'Found Product Partial SKUs: ' + ', '.join(list) + '\n'
+    products = [product for product in products if product not in list]
+    log += 'Found Starts-With Product Partial SKUs: ' + ', '.join(list) + '\n'
   
   # If two or more products are ordered to check
   if len(products) >= 2:
@@ -195,16 +182,20 @@ def checkHold(root):
   if shipvia is None:
     log += 'Shipvia: No Shipping Method\n'
   # If order will be picked up/will call in
-  if shipvia == 'WC':
+  elif shipvia == 'WC':
     log += 'Shipvia: Will Call/Pick Up order\n'
+  # If order is being shipped via UPS
+  elif shipvia == 'United Parcel Service - UPS Ground':
+    subroot.find('shipvia').text = 'UG'
+    shipChange = True
+  # If order is being shipped via FedEx Smart Post
+  elif shipvia == 'FedEx - Smart Post':
+    subroot.find('shipvia').text = 'FSP'
+    shipChange = True
   # If order is being shipped internationally
   if subroot.find('scountry').text != 'US':
     log += 'Scountry: International\n'
-  # If order is being shipped via UPS
-  if shipvia == 'United Parcel Service - UPS Ground' or shipvia == 'UG':
-    log += 'Shipvia: Changed ' + shipvia + ' to UG\n'
-    subroot.find('shipvia').text = 'UG'
-  # If order is being shipped to a possible P.O. Box via FedEx (1 Day Ground, Standard Overnight, 2 Day Air)
+  # If order is being shipped to a possible P.O. Box via FedEx (1 Day Ground, Standard Overnight, 2 Day Air) or UPS
   if ((subroot.find('saddress1').text is not None and 'p' == subroot.find('saddress1').text[0].lower() or
        subroot.find('saddress2').text is not None and 'p' == subroot.find('saddress2').text[0].lower()) and
        shipvia in poboxShippingsToHold):
@@ -214,7 +205,7 @@ def checkHold(root):
   if (subroot.find('promo_code').text is not None and subroot.find('promo_code').text[-1:] == '!'):
     log += "promo_code '" + subroot.find('promo_code').text + "' is a set amount (ends with '!')\nCoupon code in MOM\n"
   
-  return log
+  return log, shipChange
 
 # Add years to date d
 def add_years(d, years):
@@ -239,7 +230,7 @@ def main():
   # Path of the working directory to change to for parsing
   #path = 'C:\Users\sthon\Desktop\dataxml'
   path = 'C:\Xtento\Download\data'
-  # Change the currect working directory to the one to parse through
+  # Change the current working directory to the one to parse through
   os.chdir(path)
   #print 'Current working directory changed to: ' + os.getcwd()
   
@@ -249,18 +240,18 @@ def main():
     # For each XML file, parse each
     for file in files:
 		log = ''
-		ship = ''
+		shipChange = False
 		products = []
 		print 'Looking in .xml file: ' + file
 		root = ET.parse(file).getroot()
 		# Check the shipping methods and add custom info if needed
 		checkShipping(root[0])
 		# If order is on hold, set the hold date
-		log = checkHold(root)
+		log, shipChange = checkHold(root)
 		if log:
 			# Set hold date by X number of years from now
 			orderlog += 'Alternate Order #' + file[11:-4] + '\n' + log + setHolddate(root[0], 4) + '\n'
-		if log or ship:
+		if log or shipChange:
 			# Write tree back to XML file
 			ET.ElementTree(root).write(file)
 	# If something went on hold in any of the files
@@ -269,13 +260,4 @@ def main():
 		f = open('C:\Users\Administrator\Desktop\logsXtento\orders_' + datetime.now().strftime("%y-%m-%d_%H_%M") + '.txt', 'w')
 		f.write(orderlog)
 
-  #file = ''
-  #for line in fileinput.input():
-    #file += line
-  
-  #root = ET.fromstring(file)
-  
-  # Prints out XML of root for debugging purposes
-  # ET.dump(root)
-  
 main()
