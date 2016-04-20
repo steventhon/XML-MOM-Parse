@@ -161,6 +161,7 @@ def checkProducts(products):
 # checkHold returns a log if any hold condition is met
 def checkHold(root):
   log = ''
+  shipChange = False
   
   # Check all the products for hold
   log += checkProducts(createProductList(root))
