@@ -176,7 +176,14 @@ def checkHold(root):
   # If Dick Dixon orders
   if subroot.find('lastname').text == 'Dixon' and subroot.find('firstname').text == 'Dick':
     log += 'Order placed by ' + subroot.find('firstname').text + ' ' + subroot.find('lastname').text + '. Add Signature Required\n'
-
+  
+  first = subroot.find('firstname').text
+  last = subroot.find('lastname').text
+  card = subroot.find('cardholder').text
+  # If credit card name exists and any account, cardholder, and shipping names do not match
+  if card and (first + " " + last != card or first != subroot.find('sfirstname').text or last != subroot.find('slastname').text):
+    log += 'Possible fraud order. First and last names do not all match up between account, cardholder, and shipping\n'
+  
   shipvia = subroot.find('shipvia').text
   
   # If no shipping method
@@ -186,7 +193,7 @@ def checkHold(root):
   elif shipvia == 'WC':
     log += 'Shipvia: Will Call/Pick Up order\n'
   # If order is being shipped via UPS
-  elif shipvia == 'United Parcel Service - UPS Ground':
+  elif 'UPS Ground' in shipvia:
     subroot.find('shipvia').text = 'UG'
     shipChange = True
   # If order is being shipped via FedEx Smart Post
@@ -229,11 +236,10 @@ def setHolddate(root, holdYears):
 # Main function to run script
 def main():
   # Path of the working directory to change to for parsing
-  #path = 'C:\Users\sthon\Desktop\dataxml'
-  path = 'C:\Xtento\Download\data'
+  fromPath = 'C:\Xtento\Download\data'
+  toPath = 'C:\Xtento\Download\parsed'
   # Change the current working directory to the one to parse through
-  os.chdir(path)
-  #print 'Current working directory changed to: ' + os.getcwd()
+  os.chdir(fromPath)
   
   files = glob.glob('*.xml')
   if files:
@@ -255,6 +261,9 @@ def main():
 		if log or shipChange:
 			# Write tree back to XML file
 			ET.ElementTree(root).write(file)
+	# Move parsed and unparsed files to parsed folder
+    for file in files:
+		os.rename(fromPath + '/' + file, toPath + '/' + file)
 	# If something went on hold in any of the files
     if orderlog:
 	    # Create a file to write the order log in
